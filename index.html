@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ClinicSphere: The complete multi-clinic management platform. Register your dental practice, manage doctor directories, track appointments, and view SaaS analytics.">
+  <meta name="keywords" content="dental platform, dentist saas, multi clinic, clinic management, clinic registration, doctor schedule">
+  <meta name="author" content="ClinicSphere SaaS">
+  <title>ClinicSphere - Multi-Clinic Dental SaaS Platform</title>
+  
+  <!-- FontAwesome CDN for Healthcare & Platform Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Main Platform Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Floating Toast Notifications Box -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- --- 1. COMMON HEADER & NAVIGATION --- -->
+  <header id="main-header">
+    <div class="container">
+      <a href="index.html" class="logo-container" id="platform-logo-link">
+        <i class="fa-solid fa-layer-group" style="font-size: 1.6rem; color: var(--primary);" id="logo-icon"></i>
+        <span class="logo-text" id="header-brand-text">Clinic<span>Sphere</span></span>
+      </a>
+      
+      <nav>
+        <ul class="nav-menu" id="nav-menu">
+          <!-- Platform Links (Changed dynamically via JS) -->
+          <li class="plat-nav"><a href="#home" class="nav-link active">Home</a></li>
+          <li class="plat-nav"><a href="#features" class="nav-link">Features</a></li>
+          <li class="plat-nav"><a href="#register" class="nav-link">Register Clinic</a></li>
+          <li class="plat-nav"><a href="login.html" class="btn btn-secondary" style="padding: 8px 20px;"><i class="fa-solid fa-arrow-right-to-bracket"></i> Admin Login</a></li>
+          
+          <!-- Clinic Links (Hidden by default, shown when ?clinic= is active) -->
+          <li class="clinic-nav" style="display: none;"><a href="#home" class="nav-link active">Home</a></li>
+          <li class="clinic-nav" style="display: none;"><a href="#about" class="nav-link">About</a></li>
+          <li class="clinic-nav" style="display: none;"><a href="#services" class="nav-link">Services</a></li>
+          <li class="clinic-nav" style="display: none;"><a href="#doctors" class="nav-link">Doctors</a></li>
+          <li class="clinic-nav" style="display: none;"><a href="#contact" class="nav-link">Contact</a></li>
+          <li class="clinic-nav" style="display: none;"><a href="#book" class="btn btn-primary" id="nav-cta-btn"><i class="fa-regular fa-calendar-check"></i> Book Now</a></li>
+          
+          <!-- Dark Mode Button Toggle -->
+          <li>
+            <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Theme">
+              <i class="fa-solid fa-moon"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+      
+      <button class="hamburger" id="hamburger-menu" aria-label="Toggle Navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       VIEW A: SaaS PLATFORM HOMEPAGE (No ?clinic= in URL)
+       ========================================================================= -->
+  <div id="platform-view">
+    
+    <!-- Platform Hero -->
+    <section class="platform-banner" id="home">
+      <div class="container">
+        <div class="platform-grid">
+          <div class="platform-hero">
+            <h1>The Intelligent Operating System for <span>Modern Dental Clinics</span></h1>
+            <p>ClinicSphere is a secure multi-clinic SaaS platform that gives dental clinics their own custom booking pages, isolated analytics, doctor management, patient histories, and CSV/PDF exporters. Empower your practice today.</p>
+            
+            <!-- Quick Clinic Finder Section -->
+            <div class="find-clinic-wrapper">
+              <h4>Book an Appointment? Find Your Clinic:</h4>
+              <div class="clinic-search-box">
+                <select id="platform-clinic-finder" class="clinic-search-select">
+                  <option value="" disabled selected>Select Registered Practice...</option>
+                  <!-- Populated via JS -->
+                </select>
+                <button class="btn btn-primary" id="btn-go-to-clinic">Go <i class="fa-solid fa-chevron-right"></i></button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Clinic Quick Registration Card -->
+          <div class="registry-card glass-panel" id="register">
+            <h3>Register Your Practice</h3>
+            <p>Launch your clinic portal and patient booking page in 10 seconds.</p>
+            
+            <form class="registry-form" id="clinic-registration-form">
+              <div class="form-group">
+                <label for="reg-name">Clinic Name *</label>
+                <input type="text" id="reg-name" class="form-input" placeholder="e.g. Pearl Family Dental" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="reg-slug">URL Slug (Letters/dashes only) *</label>
+                <input type="text" id="reg-slug" class="form-input" placeholder="e.g. pearl-dental" required pattern="^[a-zA-Z0-9\-]+$">
+              </div>
+              
+              <div class="form-group">
+                <label for="reg-email">Admin Owner Email *</label>
+                <input type="email" id="reg-email" class="form-input" placeholder="e.g. owner@pearldental.com" required autocomplete="username">
+              </div>
+              
+              <div class="form-group">
+                <label for="reg-password">Admin Access Password *</label>
+                <input type="password" id="reg-password" class="form-input" placeholder="Min 6 characters" required autocomplete="new-password">
+              </div>
+              
+              <div class="form-group">
+                <label for="reg-address">Clinic Physical Address *</label>
+                <input type="text" id="reg-address" class="form-input" placeholder="e.g. 505 Medical Plaza, City Centre" required>
+              </div>
+              
+              <button type="submit" class="btn btn-primary btn-register" id="btn-register-submit">
+                Register & Open Portal <i class="fa-solid fa-arrow-pointer"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform Features -->
+    <section class="section about" id="features" style="background-color: var(--light-card);">
+      <div class="container">
+        <div class="section-header">
+          <span class="subtitle">Platform Features</span>
+          <h2>Independent Isolated Practicing Workspaces</h2>
+        </div>
+        <div class="about-grid" style="grid-template-columns: 1fr 1fr; gap: 40px;">
+          <div class="about-stats">
+            <div class="stat-card">
+              <div class="stat-number"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="stat-title">Data Sandboxing</div>
+              <div class="stat-desc">Complete cryptographic and database separation between practices.</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number"><i class="fa-solid fa-chart-pie"></i></div>
+              <div class="stat-title">Practice Charts</div>
+              <div class="stat-desc">Monthly metrics compilations and automatic chart render panels.</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number"><i class="fa-solid fa-users-gear"></i></div>
+              <div class="stat-title">Doctor Rosters</div>
+              <div class="stat-desc">Independent doctor listings, availability tags, and assignments.</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number"><i class="fa-solid fa-file-export"></i></div>
+              <div class="stat-title">SaaS Exports</div>
+              <div class="stat-desc">Compile clean CSV spreadsheets or printable PDF tables in one click.</div>
+            </div>
+          </div>
+          
+          <div class="about-content">
+            <h3>Enterprise-Grade Tools For Clinics Of All Sizes</h3>
+            <p class="main-text">Provide premium modern medical pathways for your clinic without complex custom coding pipelines or server operations costs.</p>
+            <p class="body-text">ClinicSphere is built to serve thousands of unique dental practices. Once registered, you immediately obtain access to a designated, clean patient booking website and a full-fidelity administrator control panel, complete with role security checks and dynamic data listeners.</p>
+            <a href="#register" class="btn btn-primary">Get Started Now</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- =========================================================================
+       VIEW B: INDIVIDUAL CLINIC WEBSITE (Toggled when ?clinic=slug is present)
+       ========================================================================= -->
+  <div id="clinic-view" style="display: none;">
+    
+    <!-- Clinic Home Hero -->
+    <section class="hero" id="clinic-hero-sec">
+      <div class="container">
+        <div class="hero-grid">
+          <div class="hero-content">
+            <div class="badge">
+              <span class="badge-dot"></span>
+              Accepting Dental Patients Today
+            </div>
+            <h1 id="clinic-title-heading">SNS <span>Dental Clinic</span></h1>
+            <p id="clinic-tagline-text">Experience state-of-the-art dental care. Our team of world-class specialists is committed to providing gentle, high-end personalized treatment in a premium environment.</p>
+            <div class="hero-actions">
+              <a href="#book" class="btn btn-primary"><i class="fa-regular fa-calendar-plus"></i> Book Appointment</a>
+              <a href="#services" class="btn btn-secondary">Explore Services <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+          </div>
+          
+          <div class="hero-image-container">
+            <div class="hero-image-wrapper">
+              <img src="images/hero-doctor.png" alt="Clinic Lead Dentist Portrait">
+            </div>
+            <div class="floating-card glass-panel">
+              <div class="floating-icon">
+                <i class="fa-solid fa-face-smile"></i>
+              </div>
+              <div class="info">
+                <h4>99.8%</h4>
+                <p>Happy Radiant Smiles</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clinic About Us -->
+    <section class="section about" id="about">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-stats">
+            <div class="stat-card">
+              <div class="stat-number">15+</div>
+              <div class="stat-title">Years Experience</div>
+              <div class="stat-desc">Providing Trusted Dental Care</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">10k+</div>
+              <div class="stat-title">Happy Patients</div>
+              <div class="stat-desc">From General to Cosmetic Cases</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">25+</div>
+              <div class="stat-title">Dental Awards</div>
+              <div class="stat-desc">Recognized National Excellence</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-number">99%</div>
+              <div class="stat-title">Success Rate</div>
+              <div class="stat-desc">Advanced Modern Procedures</div>
+            </div>
+          </div>
+          
+          <div class="about-content">
+            <div class="section-header" style="text-align: left; margin-bottom: 30px; margin-left: 0;">
+              <span class="subtitle">Welcome to Our Practice</span>
+              <h2>We Are Dedicated To Your Lifelong Oral Health</h2>
+            </div>
+            <p class="main-text">We believe a healthy, bright smile is a foundation for lifelong confidence and general well-being.</p>
+            <p class="body-text">Our state-of-the-art clinic integrates modern diagnostic equipment, laser treatments, and surgical expertise with a comforting, glassmorphic patient lounge. Our mission is to customize treatment pathways for patients of all ages, ensuring maximum comfort, swift recovery, and radiant smiles.</p>
+            
+            <div class="why-choose-list">
+              <div class="why-item">
+                <i class="fa-solid fa-circle-check why-icon"></i> Advanced Technology
+              </div>
+              <div class="why-item">
+                <i class="fa-solid fa-circle-check why-icon"></i> Highly Certified Doctors
+              </div>
+              <div class="why-item">
+                <i class="fa-solid fa-circle-check why-icon"></i> Relaxed, Pain-Free Vibe
+              </div>
+              <div class="why-item">
+                <i class="fa-solid fa-circle-check why-icon"></i> Tailored Payment Plans
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clinic Services -->
+    <section class="section services" id="services" style="background-color: rgba(15, 98, 254, 0.02);">
+      <div class="container">
+        <div class="section-header">
+          <span class="subtitle">Our Services</span>
+          <h2>Premium Dental Care Tailored For You</h2>
+        </div>
+        
+        <div class="services-grid">
+          <div class="service-card">
+            <div class="service-icon-wrapper"><i class="fa-solid fa-stethoscope"></i></div>
+            <h3>Dental Checkup</h3>
+            <p>Comprehensive oral evaluations, high-definition digital X-rays, and customized preventative hygiene charting.</p>
+            <a href="#book" class="service-link">Book Now <i class="fa-solid fa-chevron-right"></i></a>
+          </div>
+          
+          <div class="service-card">
+            <div class="service-icon-wrapper"><i class="fa-solid fa-teeth"></i></div>
+            <h3>Teeth Cleaning</h3>
+            <p>Deep scaling, polishing, and advanced enamel fluoride treatments to safely eliminate tartar and prevent plaque.</p>
+            <a href="#book" class="service-link">Book Now <i class="fa-solid fa-chevron-right"></i></a>
+          </div>
+          
+          <div class="service-card">
+            <div class="service-icon-wrapper"><i class="fa-solid fa-tooth"></i></div>
+            <h3>Root Canal</h3>
+            <p>Highly precise, virtually painless root treatments using micro-endodontics to preserve your natural tooth structures.</p>
+            <a href="#book" class="service-link">Book Now <i class="fa-solid fa-chevron-right"></i></a>
+          </div>
+          
+          <div class="service-card">
+            <div class="service-icon-wrapper"><i class="fa-solid fa-teeth-open"></i></div>
+            <h3>Braces</h3>
+            <p>Professional alignment systems including modern aesthetic ceramic braces, traditional brackets, and clear Invisalign aligners.</p>
+            <a href="#book" class="service-link">Book Now <i class="fa-solid fa-chevron-right"></i></a>
+          </div>
+          
+          <div class="service-card">
+            <div class="service-icon-wrapper"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <h3>Teeth Whitening</h3>
+            <p>Professional laser whitening procedures that brighten your smile up to 8 shades in a single comfortable clinic session.</p>
+            <a href="#book" class="service-link">Book Now <i class="fa-solid fa-chevron-right"></i></a>
+          </div>
+          
+          <div class="service-card">
+            <div class="service-icon-wrapper"><i class="fa-solid fa-screwdriver"></i></div>
+            <h3>Dental Implants</h3>
+            <p>Premium medical-grade titanium implants topped with custom ceramic crowns to permanently restore dental function.</p>
+            <a href="#book" class="service-link">Book Now <i class="fa-solid fa-chevron-right"></i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clinic Doctors (Populated via JS query based on clinicId) -->
+    <section class="section doctors" id="doctors">
+      <div class="container">
+        <div class="section-header">
+          <span class="subtitle">Meet Our Specialists</span>
+          <h2>Experienced World-Class Dental Team</h2>
+        </div>
+        
+        <div class="doctors-grid" id="clinic-doctors-grid">
+          <!-- Dynamically populated or seeding with active clinic doctors -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Clinic Booking Section -->
+    <section class="section booking" id="book" style="background-color: var(--light-bg);">
+      <div class="container">
+        <div class="booking-grid">
+          <div class="booking-text">
+            <div class="section-header" style="text-align: left; margin-bottom: 30px; margin-left: 0;">
+              <span class="subtitle">Book An Appointment</span>
+              <h2>Take The First Step To A Radiant New Smile</h2>
+            </div>
+            <p>Schedule your consultation instantly online. Fill out our simple booking form and our administration desk will reach out via email or phone within 1 hour to finalize your time slot.</p>
+            
+            <div class="booking-features">
+              <div class="b-feature">
+                <div class="b-feature-icon"><i class="fa-solid fa-clock"></i></div>
+                <div class="b-feature-info">
+                  <h4>Flexible Time Slots</h4>
+                  <p>Morning, afternoon, and selective Saturday hours are open.</p>
+                </div>
+              </div>
+              <div class="b-feature">
+                <div class="b-feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="b-feature-info">
+                  <h4>100% Safe & Secure</h4>
+                  <p>Your medical details are protected under standard medical privacy acts.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="booking-form-card glass-panel" id="booking-card">
+            <h3>Online Booking</h3>
+            <p class="desc">Quick scheduling in under 60 seconds</p>
+            
+            <form id="appointment-form">
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="book-name">Full Name *</label>
+                  <input type="text" id="book-name" class="form-input" placeholder="e.g. John Doe" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="book-phone">Phone Number *</label>
+                  <input type="tel" id="book-phone" class="form-input" placeholder="e.g. +1 (555) 019-2834" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="book-email">Email Address *</label>
+                  <input type="email" id="book-email" class="form-input" placeholder="e.g. john@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="book-service">Select Service *</label>
+                  <select id="book-service" class="form-input" required style="height: 46px;">
+                    <option value="" disabled selected>Select Dental Treatment</option>
+                    <option value="Dental Checkup">Dental Checkup</option>
+                    <option value="Teeth Cleaning">Teeth Cleaning</option>
+                    <option value="Root Canal">Root Canal</option>
+                    <option value="Braces">Braces</option>
+                    <option value="Teeth Whitening">Teeth Whitening</option>
+                    <option value="Dental Implants">Dental Implants</option>
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="book-date">Preferred Date *</label>
+                  <input type="date" id="book-date" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="book-time">Preferred Time *</label>
+                  <input type="time" id="book-time" class="form-input" required>
+                </div>
+                
+                <div class="form-group full-width">
+                  <label for="book-message">Additional Note / Symptoms</label>
+                  <textarea id="book-message" class="form-input" placeholder="Please describe any issues or dental concerns you'd like the doctor to address..."></textarea>
+                </div>
+              </div>
+              
+              <button type="submit" class="btn btn-primary" id="btn-booking-submit">
+                Submit Request <i class="fa-solid fa-arrow-right-long"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clinic Testimonials -->
+    <section class="section reviews" id="reviews" style="background-color: rgba(15, 98, 254, 0.01);">
+      <div class="container">
+        <div class="section-header">
+          <span class="subtitle">Patient Reviews</span>
+          <h2>What Our Healthy Patients Say</h2>
+        </div>
+        
+        <div class="reviews-carousel-container">
+          <div class="reviews-carousel-track" id="reviews-carousel-track">
+            
+            <div class="review-slide">
+              <div class="review-card">
+                <span class="review-quote-icon"><i class="fa-solid fa-quote-left"></i></span>
+                <div class="stars-container">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="review-text">"I always feared root canals, but the dentists made it incredibly painless and comfortable. The modern clinic environment and glassmorphic layouts made me feel highly relaxed!"</p>
+                <div class="reviewer-meta">
+                  <div class="reviewer-avatar">AH</div>
+                  <div class="reviewer-details">
+                    <h4>Alice Henderson</h4>
+                    <p>Root Canal Patient</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="review-slide">
+              <div class="review-card">
+                <span class="review-quote-icon"><i class="fa-solid fa-quote-left"></i></span>
+                <div class="stars-container">
+                  <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                </div>
+                <p class="review-text">"Getting Invisalign aligners here was the best decision. The senior orthodontist is highly experienced and guided me through every stage of checkup."</p>
+                <div class="reviewer-meta">
+                  <div class="reviewer-avatar">RM</div>
+                  <div class="reviewer-details">
+                    <h4>Robert Miller</h4>
+                    <p>Braces Patient</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          
+          <div class="carousel-indicators" id="carousel-indicators">
+            <button class="indicator active" data-slide="0" aria-label="Review Slide 1"></button>
+            <button class="indicator" data-slide="1" aria-label="Review Slide 2"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Clinic Location -->
+    <section class="section contact" id="contact">
+      <div class="container">
+        <div class="section-header">
+          <span class="subtitle">Get In Touch</span>
+          <h2>We Would Love To Hear From You</h2>
+        </div>
+        
+        <div class="contact-grid">
+          <div class="contact-info">
+            <div class="contact-card">
+              <div class="contact-card-icon"><i class="fa-solid fa-location-dot"></i></div>
+              <div class="contact-card-details">
+                <h4>Clinic Location</h4>
+                <p id="clinic-location-address">120 Healthcare Avenue, Medical District, NY 10016</p>
+              </div>
+            </div>
+            
+            <div class="contact-card">
+              <div class="contact-card-icon"><i class="fa-solid fa-phone"></i></div>
+              <div class="contact-card-details">
+                <h4>Phone Number</h4>
+                <p id="clinic-phone-number">+1 (555) 234-9876</p>
+              </div>
+            </div>
+            
+            <div class="contact-card">
+              <div class="contact-card-icon"><i class="fa-solid fa-envelope"></i></div>
+              <div class="contact-card-details">
+                <h4>Email Address</h4>
+                <p id="clinic-email-address">support@snsdentalclinic.com</p>
+              </div>
+            </div>
+            
+            <div class="hours-card">
+              <h4>Working Hours</h4>
+              <div class="hours-row">
+                <span class="hours-day">Monday - Friday</span>
+                <span class="hours-time">08:00 AM - 06:00 PM</span>
+              </div>
+              <div class="hours-row">
+                <span class="hours-day">Saturday</span>
+                <span class="hours-time">09:00 AM - 02:00 PM</span>
+              </div>
+              <div class="hours-row">
+                <span class="hours-day">Sunday</span>
+                <span class="hours-time closed">Closed</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="contact-media">
+            <div class="map-wrapper">
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.617538202575!2d-73.98685368459392!3d40.74844047932828!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1m3!1d3022.617538202575!2d-73.98685368459392!3d40.74844047932828!2m2!1sen!2sus!5e0!3m2!1sen!2sus!4v1625000000000!5m2!1sen!2sus" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- --- 14. DUAL FOOTER --- -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        
+        <div class="footer-brand">
+          <div class="logo-container">
+            <i class="fa-solid fa-tooth" style="font-size: 1.5rem; color: white;"></i>
+            <span class="logo-text" style="color: white;" id="footer-brand-text">SNS<span>Dental</span></span>
+          </div>
+          <p id="footer-about-text">Providing premium, patient-centric dental care using leading-edge diagnostic and aesthetic alignment innovations. Feel confident in your smile.</p>
+          <div class="footer-socials">
+            <a href="#" class="footer-social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#" class="footer-social-btn"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="footer-social-btn"><i class="fa-brands fa-twitter"></i></a>
+            <a href="#" class="footer-social-btn"><i class="fa-brands fa-youtube"></i></a>
+          </div>
+        </div>
+        
+        <div class="footer-links">
+          <h4>Platform Navigations</h4>
+          <ul class="f-links" id="footer-links-list">
+            <!-- Populated dynamically to reflect platform vs. clinic context -->
+            <li><a href="#home" class="f-link-item"><i class="fa-solid fa-chevron-right"></i> Home</a></li>
+            <li><a href="login.html" class="f-link-item"><i class="fa-solid fa-chevron-right"></i> Practice Access</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-newsletter">
+          <h4>SaaS Newsletter</h4>
+          <p>Subscribe to receive system feature releases, dental checklists, and selective partner clinic discounts.</p>
+          <form class="newsletter-form" id="newsletter-form">
+            <input type="email" class="newsletter-input" placeholder="Your Email Address" required>
+            <button type="submit" class="newsletter-btn" aria-label="Subscribe"><i class="fa-regular fa-paper-plane"></i></button>
+          </form>
+        </div>
+        
+      </div>
+      
+      <div class="footer-bottom">
+        <p id="footer-copyright-text">&copy; 2026 ClinicSphere SaaS Platform. All Rights Reserved. Designed for clinic multi-tenancy.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- --- 15. DYNAMIC SCRIPTS AND CDNs --- -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

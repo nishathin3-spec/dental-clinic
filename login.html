@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Secure Admin Portal Login for SNS Dental Clinic. Authorized administration staff only.">
+  <meta name="robots" content="noindex, nofollow"> <!-- Prevents search engine indexing for security -->
+  <title>Admin Login - SNS Dental Clinic</title>
+  
+  <!-- FontAwesome for secure input key/user icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Custom login stylesheets -->
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+  <!-- --- MAIN LOGIN WRAPPER CARD --- -->
+  <div class="login-container">
+    <div class="login-card">
+      
+      <div class="login-header">
+        <span class="brand-icon"><i class="fa-solid fa-shield-halved"></i></span>
+        <h2>Admin Portal</h2>
+        <p>Enter credentials to access SNS Dental database dashboard.</p>
+      </div>
+      
+      <!-- Login validation error indicator -->
+      <div id="login-error" class="error-banner">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        <span id="login-error-text">Incorrect username or password.</span>
+      </div>
+      
+      <form id="admin-login-form">
+        <div class="form-group">
+          <label for="login-email">Admin Email</label>
+          <div class="input-wrapper">
+            <i class="fa-regular fa-envelope input-icon"></i>
+            <input type="email" id="login-email" class="form-input" placeholder="admin@snsdental.com" required autocomplete="username">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-wrapper">
+            <i class="fa-solid fa-lock input-icon"></i>
+            <input type="password" id="login-password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-login" id="btn-login-submit">
+          <span class="spinner"></span>
+          Secure Sign In <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        </button>
+      </form>
+      
+      <div class="back-to-site">
+        <a href="index.html"><i class="fa-solid fa-arrow-left"></i> Return to Public Site</a>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Loading authenticating module logic -->
+  <script type="module" src="js/login.js"></script>
+</body>
+</html>

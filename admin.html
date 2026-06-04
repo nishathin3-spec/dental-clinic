@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ClinicSphere SaaS Administrator Practice Management Panel. Fully isolated tenant databases.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Clinic Dashboard - ClinicSphere SaaS</title>
+  
+  <!-- FontAwesome CDN for SaaS Dashboard Navigation & Badges Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Chart.js CDN for Live Dashboard Analytics Charts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Custom admin stylesheet -->
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <!-- Floating Toast Notifications System Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- --- DASHBOARD LAYOUT ROOT --- -->
+  <div class="admin-container">
+    
+    <!-- Mobile top bar header for sidebar menu toggling on small devices -->
+    <div class="mobile-top-bar" id="mobile-top-bar">
+      <div class="logo-container">
+        <span class="sidebar-logo-text">Clinic<span>Sphere</span></span>
+      </div>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Sidebar Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <!-- 1. LEFT SIDEBAR MENU -->
+    <aside class="sidebar" id="dashboard-sidebar">
+      <div class="sidebar-brand-wrapper">
+        <div class="sidebar-header">
+          <i class="fa-solid fa-layer-group" style="font-size: 1.4rem; color: var(--primary-light);"></i>
+          <span class="sidebar-logo-text">Clinic<span>Sphere</span></span>
+        </div>
+        
+        <nav class="sidebar-nav">
+          <button class="sidebar-link active" data-tab="dashboard"><i class="fa-solid fa-chart-line"></i> Dashboard</button>
+          <button class="sidebar-link" data-tab="appointments"><i class="fa-regular fa-calendar-check"></i> Appointments</button>
+          <button class="sidebar-link" data-tab="doctors"><i class="fa-solid fa-user-doctor"></i> Doctor Roster</button>
+          <button class="sidebar-link" data-tab="patients"><i class="fa-solid fa-users"></i> Patient Registry</button>
+        </nav>
+      </div>
+
+      <!-- Logged In Clinic Profile details card -->
+      <div class="admin-profile-card">
+        <div class="admin-info">
+          <div class="admin-avatar" id="clinic-avatar-badge">CS</div>
+          <div class="admin-details">
+            <h5 id="sidebar-clinic-name">Loading Clinic...</h5>
+            <p>Practice Admin</p>
+          </div>
+        </div>
+        <button class="btn-logout" id="btn-logout-trigger">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- 2. MAIN DASHBOARD CONTENT AREA -->
+    <main class="main-content">
+      
+      <!-- Top header strip -->
+      <div class="main-header">
+        <div>
+          <h1 id="dashboard-main-heading">Clinic Dashboard</h1>
+          <p id="dashboard-main-subtext">Manage, schedule, and compile custom dental analytics reports.</p>
+        </div>
+        
+        <div class="header-actions-area">
+          <!-- Theme Switcher Button Toggle -->
+          <button class="theme-toggle-btn" id="theme-toggle" aria-label="Toggle Dark Theme">
+            <i class="fa-solid fa-moon"></i>
+          </button>
+          
+          <div class="date-readout" id="current-date-display">
+            Sunday, May 31, 2026
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================================
+           TAB 1: ANALYTICS OVERVIEW
+           ========================================================================= -->
+      <section class="tab-section active" id="tab-dashboard">
+        <!-- Counters statistics ribbon -->
+        <div class="stats-ribbon">
+          <!-- Total -->
+          <div class="stat-card total">
+            <div class="stat-info">
+              <h4>Total Booked</h4>
+              <div class="stat-value" id="stats-total">0</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-folder-open"></i></div>
+          </div>
+          
+          <!-- Today's -->
+          <div class="stat-card today">
+            <div class="stat-info">
+              <h4>Today's Cases</h4>
+              <div class="stat-value" id="stats-today">0</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-regular fa-clock"></i></div>
+          </div>
+          
+          <!-- Pending -->
+          <div class="stat-card pending">
+            <div class="stat-info">
+              <h4>Pending</h4>
+              <div class="stat-value" id="stats-pending">0</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-spinner fa-spin-pulse"></i></div>
+          </div>
+
+          <!-- Confirmed -->
+          <div class="stat-card confirmed">
+            <div class="stat-info">
+              <h4>Confirmed</h4>
+              <div class="stat-value" id="stats-confirmed">0</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-check-double"></i></div>
+          </div>
+          
+          <!-- Completed -->
+          <div class="stat-card completed">
+            <div class="stat-info">
+              <h4>Completed</h4>
+              <div class="stat-value" id="stats-completed">0</div>
+            </div>
+            <div class="stat-icon-wrapper"><i class="fa-solid fa-circle-check"></i></div>
+          </div>
+        </div>
+
+        <!-- Dynamic Chart.js Analytics Graph -->
+        <div class="chart-panel">
+          <div class="chart-panel-header">
+            <h3>Monthly Operations Analytics</h3>
+            <p>Displays a comparative month-by-month breakdown of completed vs. cancelled clinic consultations.</p>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="analyticsChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           TAB 2: APPOINTMENTS WORKFLOW
+           ========================================================================= -->
+      <section class="tab-section" id="tab-appointments">
+        
+        <!-- Controls bar comprising search, filters, and exports -->
+        <div class="controls-bar">
+          <div class="search-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Search patient name, phone or email...">
+          </div>
+          
+          <div class="filters-wrapper">
+            <!-- Treatment category filter -->
+            <select id="filter-service" class="filter-select">
+              <option value="all">All Services</option>
+              <option value="Dental Checkup">Dental Checkup</option>
+              <option value="Teeth Cleaning">Teeth Cleaning</option>
+              <option value="Root Canal">Root Canal</option>
+              <option value="Braces">Braces</option>
+              <option value="Teeth Whitening">Teeth Whitening</option>
+              <option value="Dental Implants">Dental Implants</option>
+            </select>
+            
+            <!-- Workflow status filter -->
+            <select id="filter-status" class="filter-select">
+              <option value="all">All Statuses</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="in_progress">In Progress</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            
+            <!-- Chronological sorting filter -->
+            <select id="sort-order" class="filter-select">
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+            </select>
+
+            <!-- SaaS Excel/PDF Exporter group -->
+            <div class="export-btn-group">
+              <button class="btn-export" id="btn-export-excel" title="Export to Excel Spreadsheet"><i class="fa-regular fa-file-excel"></i> Excel</button>
+              <button class="btn-export" id="btn-export-pdf" title="Export to Print PDF"><i class="fa-regular fa-file-pdf"></i> Print PDF</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Appointments listing table -->
+        <div class="appointments-panel">
+          <div class="table-responsive">
+            <table id="appointments-table">
+              <thead>
+                <tr>
+                  <th>Patient Details</th>
+                  <th>Dental Treatment</th>
+                  <th>Preferred Schedule</th>
+                  <th>Assigned Dentist</th>
+                  <th>Workflow Status</th>
+                  <th style="text-align: right;">Action Menu</th>
+                </tr>
+              </thead>
+              <tbody id="appointments-tbody">
+                <!-- Inline loading loop rows (replaced via JS) -->
+                <tr>
+                  <td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">
+                    <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 1.5rem; margin-bottom: 12px; color: var(--primary);"></i>
+                    <p>Accessing tenant database...</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           TAB 3: DOCTOR ROSTER MANAGEMENT
+           ========================================================================= */ -->
+      <section class="tab-section" id="tab-doctors">
+        
+        <div class="doctors-header-bar">
+          <div>
+            <h3>Practice Roster</h3>
+            <p>Add, edit, or adjust specialist directories representing your clinic.</p>
+          </div>
+          <button class="btn btn-primary" id="btn-add-doctor-trigger"><i class="fa-solid fa-user-plus"></i> Add Specialist</button>
+        </div>
+
+        <div class="doctors-grid-panel" id="admin-doctors-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+      <!-- =========================================================================
+           TAB 4: PATIENT REGISTRY & HISTORIES
+           ========================================================================= -->
+      <section class="tab-section" id="tab-patients">
+        <div class="doctors-header-bar" style="margin-bottom: 20px;">
+          <div>
+            <h3>Patient Registry</h3>
+            <p>Displays aggregate records of distinct patient profiles and histories.</p>
+          </div>
+        </div>
+
+        <div class="patient-registry-grid" id="admin-patients-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 1: DYNAMIC BOOKINGS VIEW & EDIT DIALOG
+       ========================================================================= -->
+  <div class="modal-overlay" id="edit-booking-modal-overlay">
+    <div class="modal-card">
+      
+      <div class="modal-header">
+        <h3>Edit Consultation Profile</h3>
+        <button class="btn-close-modal" id="edit-modal-close-icon" aria-label="Close dialog">&times;</button>
+      </div>
+      
+      <form id="edit-booking-form">
+        <div class="modal-body">
+          <input type="hidden" id="edit-booking-id">
+          
+          <div class="form-group">
+            <label for="edit-name">Patient Full Name *</label>
+            <input type="text" id="edit-name" class="form-input" required>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+              <label for="edit-phone">Phone Number *</label>
+              <input type="tel" id="edit-phone" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="edit-email">Email Address *</label>
+              <input type="email" id="edit-email" class="form-input" required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="edit-service">Treatment Type *</label>
+            <select id="edit-service" class="form-input" required style="height: 46px;">
+              <option value="Dental Checkup">Dental Checkup</option>
+              <option value="Teeth Cleaning">Teeth Cleaning</option>
+              <option value="Root Canal">Root Canal</option>
+              <option value="Braces">Braces</option>
+              <option value="Teeth Whitening">Teeth Whitening</option>
+              <option value="Dental Implants">Dental Implants</option>
+            </select>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-group">
+              <label for="edit-date">Preferred Date *</label>
+              <input type="date" id="edit-date" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label for="edit-time">Preferred Time Slot *</label>
+              <input type="time" id="edit-time" class="form-input" required>
+            </div>
+          </div>
+
+          <!-- Assign Doctor Roster Dropdown -->
+          <div class="form-group">
+            <label for="edit-assign-doctor">Assign Specialist Dentist *</label>
+            <select id="edit-assign-doctor" class="form-input" required style="height: 46px;">
+              <!-- Populated dynamically based on doctor Roster -->
+            </select>
+          </div>
+
+          <!-- Treatment Notes -->
+          <div class="form-group">
+            <label for="edit-treatment-notes">Clinical Notes / Diagnosis</label>
+            <textarea id="edit-treatment-notes" class="form-input" placeholder="Enter clinical notes, diagnoses, prescriptions, or post-care treatment instructions..."></textarea>
+          </div>
+          
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-close" id="btn-edit-modal-close">Discard Changes</button>
+          <button type="submit" class="btn-modal-primary">Save Changes <i class="fa-regular fa-floppy-disk"></i></button>
+        </div>
+      </form>
+      
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 2: ADD NEW SPECIALIST DIALOG
+       ========================================================================= -->
+  <div class="modal-overlay" id="add-doctor-modal-overlay">
+    <div class="modal-card">
+      
+      <div class="modal-header">
+        <h3>Add Clinic Specialist</h3>
+        <button class="btn-close-modal" id="add-doc-modal-close-icon" aria-label="Close dialog">&times;</button>
+      </div>
+      
+      <form id="add-doctor-form">
+        <div class="modal-body">
+          
+          <div class="form-group">
+            <label for="doc-name">Doctor Name *</label>
+            <input type="text" id="doc-name" class="form-input" placeholder="e.g. Dr. Ada Lovelace" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="doc-specialization">Specialization Type *</label>
+            <select id="doc-specialization" class="form-input" required style="height: 46px;">
+              <option value="" disabled selected>Select Dental Specialty...</option>
+              <option value="Lead Cosmetic Dentist">Lead Cosmetic Dentist</option>
+              <option value="Senior Orthodontist">Senior Orthodontist</option>
+              <option value="Dental Implants Specialist">Dental Implants Specialist</option>
+              <option value="General Oral Hygienist">General Oral Hygienist</option>
+              <option value="Endodontics Expert">Endodontics Expert</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="doc-qualification">Qualification / University *</label>
+            <input type="text" id="doc-qualification" class="form-input" placeholder="e.g. DDS, Harvard School of Dental Medicine" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="doc-experience">Years of Experience *</label>
+            <input type="text" id="doc-experience" class="form-input" placeholder="e.g. 8+ Yrs" required>
+          </div>
+          
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-close" id="btn-add-doc-modal-close">Cancel</button>
+          <button type="submit" class="btn-modal-primary">Add Specialist <i class="fa-solid fa-user-check"></i></button>
+        </div>
+      </form>
+      
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: PATIENT HISTORY TIMELINE DIALOG
+       ========================================================================= -->
+  <div class="modal-overlay" id="history-modal-overlay">
+    <div class="modal-card">
+      
+      <div class="modal-header">
+        <h3>Patient History Timeline</h3>
+        <button class="btn-close-modal" id="hist-modal-close-icon" aria-label="Close dialog">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        
+        <div class="patient-profile-header" style="border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 10px;">
+          <div class="patient-profile-avatar" id="hist-avatar">JD</div>
+          <div class="patient-profile-info">
+            <h4 id="hist-patient-name">John Doe</h4>
+            <p id="hist-patient-contact">john@example.com | +1 (555) 019-2834</p>
+          </div>
+        </div>
+
+        <div class="modal-detail-group">
+          <label>Visits Timeline</label>
+          <div class="visit-timeline" id="patient-visits-timeline">
+            <!-- Timeline items populated dynamically via JS -->
+          </div>
+        </div>
+        
+      </div>
+      
+      <div class="modal-footer">
+        <button class="btn-modal-close" id="btn-hist-modal-close">Close History</button>
+      </div>
+      
+    </div>
+  </div>
+
+  <!-- Load dashboard administrative module logic -->
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
